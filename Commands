@@ -1,0 +1,665 @@
+
+
+scpifile
+
+caseinsensitive()
+{
+    touppercase()
+    {
+        return toupper(c);
+    }
+}
+
+preprocessnodes()
+{
+
+    SOUR1:Current
+
+    shortform()
+}
+
+
+/* START FUNCTION DESCRIPTION ********************************************
+SourceRegisterCommands	                               	 <SS400 Common.C>
+
+SYNTAX:			void SourceRegisterCommands(Source* source)
+
+DESCRIPTION:	Register all SCPI command handler functions
+
+PARAMETER:		Source* source - instance of source class
+
+RETURN VALUE:	none
+
+END DESCRIPTION **********************************************************/
+void SourceRegisterCommands(Source* source)
+{
+	// This command is for Freedom Photonic SW trig on DCD step up
+	CommandsAdd(&source->EthernetParser, "SOURn:TRIG", 1, 1, 0, ExecCurrentSetMultSoftTrig);
+
+	// add commands to command queue
+	CommandsAdd(&source->EthernetParser, "MEM:TABL:READ",0, 0, 0, ExecSendReadings);
+	CommandsAdd(&source->EthernetParser, "MEMORY:TABLE:READINGS",0, 0, 0, ExecSendReadings);
+
+	CommandsAdd(&source->EthernetParser, "SYST:ERR:COUN?", 0, 0, 0, ExecGetErrorCount);
+	CommandsAdd(&source->EthernetParser, "SYSTEM:ERROR:COUNT?", 0, 0, 0, ExecGetErrorCount);
+
+	CommandsAdd(&source->EthernetParser, "SYST:ERR?", 0, 0, 0, ExecEventQueueCheck);
+	CommandsAdd(&source->EthernetParser, "SYSTEM:ERROR?", 0, 0, 0, ExecEventQueueCheck);
+
+	CommandsAdd(&source->EthernetParser, "SYST:REM:POL:SAVE", 1, 1, 0, ExecSaveSystRemDisPol);
+	CommandsAdd(&source->EthernetParser, "SYSTEM:REMOTE:POLARITY:SAVE", 1, 1, 0, ExecSaveSystRemDisPol);
+
+	CommandsAdd(&source->EthernetParser, "SYST:REM:POL?", 0, 0, 0, ExecSystRemDisPolGet);
+	CommandsAdd(&source->EthernetParser, "SYSTEM:REMOTE:POLARITY?", 0, 0, 0, ExecSystRemDisPolGet);
+
+	CommandsAdd(&source->EthernetParser, "SYST:REM:POL", 1, 1, 0, ExecSystRemDisPolSet);
+	CommandsAdd(&source->EthernetParser, "SYSTEM:REMOTE:POLARITY", 1, 1, 0, ExecSystRemDisPolSet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn?", 0, 0, 0, ExecGetAvailChannel);
+	CommandsAdd(&source->EthernetParser, "SOURCEn?", 0, 0, 0, ExecGetAvailChannel);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:RAMP:RATE?", 0, 0, 0, ExecGetCurrRampRate);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:RAMP:RATE?", 0, 0, 0, ExecGetCurrRampRate);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:RAMP:RATE", 1, 1, 0, ExecSetCurrRampRate);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:RAMP:RATE", 1, 1, 0, ExecSetCurrRampRate);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:RANG:LIM?", 0, 0, 0, ExecGetCurrRangeLimit);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:RANGE:LIMIT?", 0, 0, 0, ExecGetCurrRangeLimit);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:RANG:AUTO?",
+			0, 0, 0, ExecGetCurrRangeAuto);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:RANGE:AUTO?",
+			0, 0, 0, ExecGetCurrRangeAuto);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:RANG:AUTO",
+			1, 1, 0, ExecSetCurrRangeAuto);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:RANGE:AUTO",
+			1, 1, 0, ExecSetCurrRangeAuto);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:RANG?",
+			0, 0, 0, ExecGetCurrRange);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:RANGE?",
+			0, 0, 0, ExecGetCurrRange);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:RANG",
+			1, 1, 0, ExecSetCurrRange);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:RANGE",
+			1, 1, 0, ExecSetCurrRange);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:PROT?",
+			0, 0, 0, ExecOCGet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:PROTECTION?",
+			0, 0, 0, ExecOCGet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:PROT",
+			1, 1, 0, ExecOCSet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:PROTECTION",
+			1, 1, 0, ExecOCSet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:BIAS?",
+			0, 0, 0, ExecBiasCurrentGet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:BIAS?",
+			0, 0, 0, ExecBiasCurrentGet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:BIAS",
+			1, 1, 0, ExecBiasCurrentSet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:BIAS",
+			1, 1, 0, ExecBiasCurrentSet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:LIM?",
+			0, 0, 0, ExecIMaxGet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:LIMIT?",
+			0, 0, 0, ExecIMaxGet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:STAR?",
+			1, 1, 0, ExecGetPulsedSweepStartCurrent);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:START?",
+			1, 1, 0, ExecGetPulsedSweepStartCurrent);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:STAR",
+			1, 1, 0, ExecSetPulsedSweepStartCurrent);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:START",
+			1, 1, 0, ExecSetPulsedSweepStartCurrent);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:STEP?",
+			1, 1, 0, ExecGetPulsedSweepNumSteps);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:STEPS?",
+			1, 1, 0, ExecGetPulsedSweepNumSteps);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:STEP",
+			1, 1, 0, ExecSetPulsedSweepNumSteps);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:STEPS",
+			1, 1, 0, ExecSetPulsedSweepNumSteps);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:STOP?",
+			1, 1, 0, ExecGetPulsedSweepEndCurrent);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:STOP?",
+			1, 1, 0, ExecGetPulsedSweepEndCurrent);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:STOP",
+			1, 1, 0, ExecSetPulsedSweepEndCurrent);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:STOP",
+			1, 1, 0, ExecSetPulsedSweepEndCurrent);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR? MAX",
+			0, 1, 0, ExecCurrentGet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT? MAX",
+			0, 1, 0, ExecCurrentGet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:MULT:BURS:STAR?",
+			1, 1, 0, ExecGetMultiBurstStartCurrent);
+	CommandsAdd(&source->EthernetParser, "SOURn:CURRENT:MULTIPULSE:BURST:START?",
+			1, 1, 0, ExecGetMultiBurstStartCurrent);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:MULT:BURS:STAR",
+			1, 1, 0, ExecSetMultiBurstStartCurrent);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:MULTIPULSE:BURST:START",
+			1, 1, 0, ExecSetMultiBurstStartCurrent);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:MULT:BURS:STOP?",
+			1, 1, 0, ExecGetMultiBurstEndCurrent);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:MULTIPULSE:BURST:STOP?",
+			1, 1, 0, ExecGetMultiBurstEndCurrent);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR:MULT:BURS:STOP",
+			1, 1, 0, ExecSetMultiBurstEndCurrent);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT:MULTIPULSE:BURST:STOP",
+			1, 1, 0, ExecSetMultiBurstEndCurrent);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR?",
+			0, 1, 0, ExecCurrentGet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT?",
+			0, 1, 0, ExecCurrentGet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:CURR",
+			1, 1, 0, ExecCurrentSet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:CURRENT",
+			1, 1, 0, ExecCurrentSet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:VOLT:RAMP:RATE?",
+			0, 0, 0, ExecGetVoltRampRate);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:VOLTAGE:RAMP:RATE?",
+			0, 0, 0, ExecGetVoltRampRate);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:VOLT:RAMP:RATE",
+			1, 1, 0, ExecSetVoltRampRate);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:VOLTAGE:RAMP:RATE",
+			1, 1, 0, ExecSetVoltRampRate);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:VOLT:PROT:RAMP:DV?",
+			0, 1, 0, ExecDvGet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:VOLTAGE:PROTECTION:RAMP:DV?",
+			0, 1, 0, ExecDvGet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:VOLT:PROT:RAMP:DV",
+			1, 1, 0, ExecDvSet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:VOLTAGE:PROTECTION:RAMP:DV",
+			1, 1, 0, ExecDvSet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:VOLT:PROT:RAMP:DT?",
+			0, 1, 0, ExecDtGet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:VOLTAGE:PROTECTION:RAMP:DT?",
+			0, 1, 0, ExecDtGet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:VOLT:PROT:RAMP:DT",
+			1, 1, 0, ExecDtSet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:VOLTAGE:PROTECTION:RAMP:DT",
+			1, 1, 0, ExecDtSet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:VOLT:PROT:RAMP:STAT?",
+			0, 0, 0, ExecRampGet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:VOLTAGE:PROTECTION:RAMP:STATE?",
+			0, 0, 0, ExecRampGet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:VOLT:PROT:RAMP:STAT",
+			1, 1, 0, ExecRampSet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:VOLTAGE:PROTECTION:RAMP:STATE",
+			1, 1, 0, ExecRampSet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:VOLT:PROT:MODE?",
+			0, 0, 0, ExecMCVExceedModeGet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:VOLTAGE:PROTECTION:MODE?",
+			0, 0, 0, ExecMCVExceedModeGet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:VOLT:PROT:MODE",
+			1, 1, 0, ExecMCVExceedModeSet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:VOLTAGE:PROTECTION:MODE",
+			1, 1, 0, ExecMCVExceedModeSet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:VOLT:LIM?",
+			0, 0, 0, ExecVMaxGet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:VOLTAGE:LIMIT?",
+			0, 0, 0, ExecVMaxGet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:VOLT?",
+			0, 1, 0, ExecMCVGet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:VOLTAGE?",
+			0, 1, 0, ExecMCVGet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:VOLT",
+			1, 1, 0, ExecMCVSet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:VOLTAGE",
+			1, 1, 0, ExecMCVSet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:SEQ?",
+			0, 1, 0, ExecSEQGet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:SEQUENCE?",
+			0, 1, 0, ExecSEQGet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:SEQ",
+			1, 1, 0, ExecSEQSet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:SEQUENCE",
+			1, 1, 0, ExecSEQSet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:REM:POL?",
+			0, 1, 0, ExecRPolGet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:REMOTE:POLARITY?",
+			0, 1, 0, ExecRPolGet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:REM:POL",
+			1, 1, 0, ExecRPolSet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:REMOTE:POLARITY",
+			1, 1, 0, ExecRPolSet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:REM?",
+			0, 1, 0, ExecRemDisGet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:REMOTE?",
+			0, 1, 0, ExecRemDisGet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:REM",
+			1, 1, 0, ExecRemDisSet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:REMOTE",
+			1, 1, 0, ExecRemDisSet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:FUNC:SHAP?",
+			0, 1, 0, ExecGetPM);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:FUNCTION:SHAPE?",
+			0, 1, 0, ExecGetPM);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:FUNC:SHAP",
+			1, 1, 0, ExecSetPM);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:FUNCTION:SHAPE",
+			1, 1, 0, ExecSetPM);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:FUNC:XEFP?",
+			0, 1, 0, ExecGetXEfp);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:FUNCTION:XEFP?",
+			0, 1, 0, ExecGetXEfp);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:TON?",
+			0, 1, 0, ExecGetPTOn);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:TON?",
+			0, 1, 0, ExecGetPTOn);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:TON",
+			1, 1, 0, ExecSetPTOn);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:TON",
+			1, 1, 0, ExecSetPTOn);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:TOFF?",
+			0, 1, 0, ExecGetPTOff);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:TOFF?",
+			0, 1, 0, ExecGetPTOff);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:TOFF",
+			1, 1, 0, ExecSetPTOff);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:TOFF",
+			1, 1, 0, ExecSetPTOff);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:OFFSET?",
+			0, 1, 0, ExecGetWidthOffset);
+	// corrected short form
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:OFFS?",
+			0, 1, 0, ExecGetWidthOffset);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:OFFSET?",
+			0, 1, 0, ExecGetWidthOffset);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:OFFSET",
+			1, 1, 0, ExecSetWidthOffset);
+	// corrected short form
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:OFFS",
+			1, 1, 0, ExecSetWidthOffset);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:OFFSET",
+			1, 1, 0, ExecSetWidthOffset);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:WIDT?",
+			0, 1, 0, ExecGetPulseWidth);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:WIDTH?",
+			0, 1, 0, ExecGetPulseWidth);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:WIDT",
+			1, 1, 0, ExecSetPulseWidth);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:WIDTH",
+			1, 1, 0, ExecSetPulseWidth);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:DCYC?",
+			0, 1, 0, ExecGetPulseDutyCycle);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:DCYCLE?",
+			0, 1, 0, ExecGetPulseDutyCycle);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:DCYC",
+			1, 1, 0, ExecSetPulseDutyCycle);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:DCYCLE",
+			1, 1, 0, ExecSetPulseDutyCycle);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:PER?",
+			0, 1, 0, ExecGetPulsePeriod);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:PERIOD?",
+			0, 1, 0, ExecGetPulsePeriod);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:PER",
+			1, 1, 0, ExecSetPulsePeriod);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:PERIOD",
+			1, 1, 0, ExecSetPulsePeriod);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:HOLD?",
+			0, 1, 0, ExecGetPulseHold);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:HOLD?",
+			0, 1, 0, ExecGetPulseHold);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:HOLD",
+			1, 1, 0, ExecSetPulseHold);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:HOLD",
+			1, 1, 0, ExecSetPulseHold);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:CCOM?",
+			0, 1, 0, ExecGetCompF);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:CCOMP?",
+			0, 1, 0, ExecGetCompF);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:CCOM",
+			1, 1, 0, ExecSetCompF);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:CCOMP",
+			1, 1, 0, ExecSetCompF);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:RCOM?",
+			0, 1, 0, ExecGetCompR);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:RCOMP?",
+			0, 1, 0, ExecGetCompR);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:RCOM",
+			1, 1, 0, ExecSetCompR);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:RCOMP",
+			1, 1, 0, ExecSetCompR);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:STAG?",
+			0, 1, 0, ExecGetPulseStagger);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:STAGGER?",
+			0, 1, 0, ExecGetPulseStagger);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:STAG",
+			1, 1, 0, ExecSetPulseStagger);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:STAGGER",
+			1, 1, 0, ExecSetPulseStagger);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:AADJ?",
+			0, 1, 0, ExecGetPulseWidthAdjust);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:AADJUSTMENT?",
+			0, 1, 0, ExecGetPulseWidthAdjust);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:AADJ",
+			1, 1, 0, ExecSetPulseWidthAdjust);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:AADJUSTMENT",
+			1, 1, 0, ExecSetPulseWidthAdjust);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:COUN?",
+			0, 1, 0, ExecGetPulseCount);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:COUNT?",
+			0, 1, 0, ExecGetPulseCount);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:COUN",
+			1, 1, 0, ExecSetPulseCount);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:COUNT",
+			1, 1, 0, ExecSetPulseCount);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:TRIG:DEL?",
+			0, 1, 0, ExecGetPulseTrigDelay);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:TRIGGER:DELAY?",
+			0, 1, 0, ExecGetPulseTrigDelay);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:TRIG:DEL",
+			1, 1, 0, ExecSetPulseTrigDelay);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:TRIGGER:DELAY",
+			1, 1, 0, ExecSetPulseTrigDelay);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:TRIG?",
+			0, 1, 0, ExecGetPulseTrig);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:TRIGGER?",
+			0, 1, 0, ExecGetPulseTrig);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:TRIG",
+			1, 1, 0, ExecSetPulseTrig);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:TRIGGER",
+			1, 1, 0, ExecSetPulseTrig);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:MULT:TRIG?",
+			0, 1, 0, ExecGetPulseMultTrig);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:MULTIPULSE:TRIG?",
+			0, 1, 0, ExecGetPulseMultTrig);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:MULT:TRIG",
+			1, 1, 0, ExecSetPulseMultTrig);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:MULTIPULSE:TRIG",
+			1, 1, 0, ExecSetPulseMultTrig);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:SYNC?",
+			0, 1, 0, ExecGetPulseSync);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:SYNCHRONIZE?",
+			0, 1, 0, ExecGetPulseSync);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:SYNC",
+			1, 1, 0, ExecSetPulseSync);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:SYNCHRONIZE",
+			1, 1, 0, ExecSetPulseSync);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:END?",
+			1, 1, 0, ExecGetPulseEnd);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:END?",
+			1, 1, 0, ExecGetPulseEnd);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:MULT:BURS:COUN?",
+			0, 1, 0, ExecGetMultiBurstCount);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:MULTIPULSE:BURST:COUNT?",
+			0, 1, 0, ExecGetMultiBurstCount);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:MULT:BURS:COUN",
+			1, 1, 0, ExecSetMultiBurstCount);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:MULTIPULSE:BURST:COUNT",
+			1, 1, 0, ExecSetMultiBurstCount);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:MULT:BURS:RETR?",
+			0, 1, 0, ExecGetMultiBurstOffTime);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:MULTIPULSE:BURST:RETRIGGERTIME?",
+			0, 1, 0, ExecGetMultiBurstOffTime);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:PULS:MULT:BURS:RETR",
+			1, 1, 0, ExecSetMultiBurstOffTime);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:PULSE:MULTIPULSE:BURST:RETRIGGERTIME",
+			1, 1, 0, ExecSetMultiBurstOffTime);
+
+	CommandsAdd(&source->EthernetParser, "OUTPn:RAMP?",
+			0, 0, 0, ExecGetFastRampRate);
+	CommandsAdd(&source->EthernetParser, "OUTPUTn:RAMP?",
+			0, 0, 0, ExecGetFastRampRate);
+
+	CommandsAdd(&source->EthernetParser, "OUTPn:RAMP",
+			1, 1, 0, ExecSetFastRampRate);
+	CommandsAdd(&source->EthernetParser, "OUTPUTn:RAMP",
+			1, 1, 0, ExecSetFastRampRate);
+
+	CommandsAdd(&source->EthernetParser, "OUTPn:TRIG:SLOP?",
+			0, 0, 0, ExecGetTriggerSlope);
+	CommandsAdd(&source->EthernetParser, "OUTPUTn:TRIGGER:SLOPE?",
+			0, 0, 0, ExecGetTriggerSlope);
+
+	CommandsAdd(&source->EthernetParser, "OUTPn:TRIG:SLOP",
+			1, 1, 0, ExecSetTriggerSlope);
+	CommandsAdd(&source->EthernetParser, "OUTPUTn:TRIGGER:SLOPE",
+			1, 1, 0, ExecSetTriggerSlope);
+
+	CommandsAdd(&source->EthernetParser, "OUTPn:TRIG:SOUR?",
+			0, 0, 0, ExecGetTriggerSource);
+	CommandsAdd(&source->EthernetParser, "OUTPUTn:TRIGGER:SOURCE?",
+			0, 0, 0, ExecGetTriggerSource);
+
+	CommandsAdd(&source->EthernetParser, "OUTPn:TRIG:SOUR",
+			1, 1, 0, ExecSetTriggerSource);
+	CommandsAdd(&source->EthernetParser, "OUTPUTn:TRIGGER:SOURCE",
+			1, 1, 0, ExecSetTriggerSource);
+
+	CommandsAdd(&source->EthernetParser, "OUTPn:TRIG:DEL?",
+			0, 0, 0, ExecGetExtTrigDelay);
+	CommandsAdd(&source->EthernetParser, "OUTPUTn:TRIGGER:DELAY?",
+			0, 0, 0, ExecGetExtTrigDelay);
+
+	CommandsAdd(&source->EthernetParser, "OUTPn:TRIG:DEL",
+			1, 1, 0, ExecSetExtTrigDelay);
+	CommandsAdd(&source->EthernetParser, "OUTPUTn:TRIGGER:DELAY",
+			1, 1, 0, ExecSetExtTrigDelay);
+
+	CommandsAdd(&source->EthernetParser, "OUTPn:TRIG:POL?",
+			0, 0, 0, ExecGetTriggerPolarity);
+	CommandsAdd(&source->EthernetParser, "OUTPUTn:TRIGGER:POLARITY?",
+			0, 0, 0, ExecGetTriggerPolarity);
+
+	CommandsAdd(&source->EthernetParser, "OUTPn:TRIG:POL",
+			1, 1, 0, ExecSetTriggerPolarity);
+	CommandsAdd(&source->EthernetParser, "OUTPUTn:TRIGGER:POLARITY",
+			1, 1, 0, ExecSetTriggerPolarity);
+
+	CommandsAdd(&source->EthernetParser, "OUTPn:TRIG",
+			0, 0, 0, ExecOutputTrigger);
+	CommandsAdd(&source->EthernetParser, "OUTPUTn:TRIGGER",
+			0, 0, 0, ExecOutputTrigger);
+
+	CommandsAdd(&source->EthernetParser, "OUTPn:CONN:AVAIL?",
+			0, 0, 0, ExecGetConnAvail);
+	CommandsAdd(&source->EthernetParser, "OUTPUTn:CONNECT:AVAILABLE?",
+			0, 0, 0, ExecGetConnAvail);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:POW:LIM:SING",
+			0, 0, 0, ExecPMaxGet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:POWER:LIMIT:SINGLE",
+			0, 0, 0, ExecPMaxGet);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:POW:LIM:GROU",
+			0, 0, 0, ExecPMaxGet);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:POWER:LIMIT:GROUP",
+			0, 0, 0, ExecPMaxGet);
+
+	CommandsAdd(&source->EthernetParser, "OUTPn?",
+			0, 0, 0, ExecOutputGet);
+	CommandsAdd(&source->EthernetParser, "OUTPUTn?",
+			0, 0, 0, ExecOutputGet);
+
+	CommandsAdd(&source->EthernetParser, "OUTPn:CONN:SAVE",
+			1, 1, 0, ExecSaveOutputConnect);
+	CommandsAdd(&source->EthernetParser, "OUTPUTn:CONNECT:SAVE",
+			1, 1, 0, ExecSaveOutputConnect);
+
+	CommandsAdd(&source->EthernetParser, "OUTPn:CONN?",
+			0, 0, 0, ExecGetOutputConnect);
+	CommandsAdd(&source->EthernetParser, "OUTPUTn:CONNECT?",
+			0, 0, 0, ExecGetOutputConnect);
+
+	CommandsAdd(&source->EthernetParser, "OUTPn:CONN",
+			1, 1, 0, ExecSetOutputConnect);
+	CommandsAdd(&source->EthernetParser, "OUTPUTn:CONNECT",
+			1, 1, 0, ExecSetOutputConnect);
+
+	CommandsAdd(&source->EthernetParser, "OUTPn",
+			1, 1, 0, ExecOutputSet);
+	CommandsAdd(&source->EthernetParser, "OUTPUTn",
+			1, 1, 0, ExecOutputSet);
+
+	CommandsAdd(&source->EthernetParser, "MEM:COPY CAL,FLASH",
+			1, 1, 0, ExecCalFlash);
+	CommandsAdd(&source->EthernetParser, "MEMORY:COPY CAL,FLASH",
+			1, 1, 0, ExecCalFlash);
+
+	CommandsAdd(&source->EthernetParser, "MEM:CLEAR CAL",
+			1, 1, 0, ExecCalClear);
+	CommandsAdd(&source->EthernetParser, "MEMORY:CLEAR CAL",
+			1, 1, 0, ExecCalClear);
+
+	CommandsAdd(&source->EthernetParser, "MEM:CLEAR CONFIG",
+			1, 1, 0, ExecConfigClear);
+	CommandsAdd(&source->EthernetParser, "MEMORY:CLEAR CONFIG",
+			1, 1, 0, ExecConfigClear);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:FUNC:CALM?",
+			0, 0, 0, ExecGetCalMode);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:FUNCTION:CALMODE?",
+			0, 0, 0, ExecGetCalMode);
+
+	CommandsAdd(&source->EthernetParser, "SOURn:FUNC:CALM",
+			1, 1, 0, ExecSetCalMode);
+	CommandsAdd(&source->EthernetParser, "SOURCEn:FUNCTION:CALMODE",
+			1, 1, 0, ExecSetCalMode);
+
+	CommandsAdd(&source->EthernetParser, "MEM:DATA",
+			1, 1, 0, ExecMemData);
+	CommandsAdd(&source->EthernetParser, "MEMORY:DATA",
+			1, 1, 0, ExecMemData);
+
+	CommandsAdd(&source->EthernetParser, "MEM:TABL:HOUS",
+			0, 0, 0, ExecSendHousekeeping);
+	CommandsAdd(&source->EthernetParser, "MEMORY:TABLE:HOUSEKEEPING",
+			0, 0, 0, ExecSendHousekeeping);
+
+	CommandsAdd(&source->EthernetParser, "MEM:TABL:BULK",
+			0, 0, 0, ExecSendBulkReadings);
+	CommandsAdd(&source->EthernetParser, "MEMORY:TABLE:BULKVOLTAGE",
+			0, 0, 0, ExecSendBulkReadings);
+
+	CommandsAdd(&source->EthernetParser, "SYST:TIM?",
+			0, 0, 0, ExecGetTimeoutState);
+	CommandsAdd(&source->EthernetParser, "SYSTEM:TIMEOUT?",
+			0, 0, 0, ExecGetTimeoutState);
+
+	CommandsAdd(&source->EthernetParser, "SYST:TIM",
+			1, 1, 0, ExecSetTimeoutState);
+	CommandsAdd(&source->EthernetParser, "SYSTEM:TIMEOUT",
+			1, 1, 0, ExecSetTimeoutState);
+
+	CommandsAdd(&source->EthernetParser, "DIAGn:OCTE",
+			1, 1, 0, ExecOCTest);
+	CommandsAdd(&source->EthernetParser, "DIAGNOSTICn:OCTEST",
+			1, 1, 0, ExecOCTest);
+
+	CommandsAdd(&source->EthernetParser, "DIAGn:BULK:OCTE",
+			1, 1, 0, ExecBulkOCTest);
+	CommandsAdd(&source->EthernetParser, "DIAGNOSTICn:BULK:OCTEST",
+			1, 1, 0, ExecBulkOCTest);
+
+	CommandsAdd(&source->EthernetParser, "DIAGn:OVTE",
+			1, 1, 0, ExecOVTest);
+	CommandsAdd(&source->EthernetParser, "DIAGNOSTICn:OVTEST",
+			1, 1, 0, ExecOVTest);
+
+	CommandsAdd(&source->EthernetParser, "DIAGn:I2C:STRESS",
+			1, 1, 0, ExecI2cStressTest);
+	CommandsAdd(&source->EthernetParser, "DIAGNOSTICn:I2C:STRESS",
+			1, 1, 0, ExecI2cStressTest);
+
+	CommandsAdd(&source->EthernetParser, "DIAGn:DSP?",
+			1, 1, 0, ExecDspCheck);
+	CommandsAdd(&source->EthernetParser, "DIAGNOSTICn:DSP?",
+			1, 1, 0, ExecDspCheck);
+
+	CommandsAdd(&source->EthernetParser, "DIAGn:ECAP2CAP4?",
+			1, 1, 0, ExecECap2Cap4);
+	CommandsAdd(&source->EthernetParser, "DIAGNOSTICn:ECAP2CAP4?",
+			1, 1, 0, ExecECap2Cap4);
+
+	CommandsAdd(&source->EthernetParser, "DIAGn:ECAP2CAP3?",
+			1, 1, 0, ExecECap2Cap3);
+	CommandsAdd(&source->EthernetParser, "DIAGNOSTICn:ECAP2CAP3?",
+			1, 1, 0, ExecECap2Cap3);
+
+	CommandsAdd(&source->EthernetParser, "*RST", 0, 0, 0, ExecRST);
+	CommandsAdd(&source->EthernetParser, "*IDN?", 0, 0, 0, ExecIDN);
+
+	DigitizerRegisterCommands(&source->EthernetParser);
+}
